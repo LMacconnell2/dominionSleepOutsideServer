@@ -1,69 +1,170 @@
 {
   "user": {
-    "_id": "int",
-    "username": "string",
-    "email": "string",
-    "password": "string (encrypted)",
-    "cart": "object",
-    "address": "string (optional)"
+    "type": "object",
+    "properties": {
+      "_id": { "type": "number" },
+      "username": { "type": "string" },
+      "email": { "type": "string" },
+      "password": {
+        "type": "string",
+        "description": "encrypted"
+      },
+      "cart": { "type": "object" },
+      "address": {
+        "type": "string",
+        "description": "optional"
+      }
+    }
   },
-
   "order": {
-    "_orderId": "int",
-    "items": [
-      {
-        "item": {
-          "_itemId": "int",
-          "itemName": "string",
-          "itemAmount": "int",
-          "itemModifiers": "array",
-          "itemPrice": "float",
-          "itemDiscount": "float"
+    "type": "object",
+    "properties": {
+      "_orderId": { "type": "number" },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_itemId": { "type": "number" },
+            "itemName": { "type": "string" },
+            "itemAmount": { "type": "number" },
+            "itemModifiers": { "type": "array" },
+            "itemPrice": { "type": "number" },
+            "itemDiscount": { "type": "number" }
+          }
         }
+      },
+      "datetime": { "type": "string", "format": "date-time" },
+      "subtotal": { "type": "number" },
+      "total": { "type": "number" },
+      "address": {
+        "type": "string",
+        "description": "required"
       }
-    ],
-    "datetime": "datetime",
-    "subtotal": "float",
-    "total": "float",
-    "address": "string (required)"
+    }
   },
-  
   "cart": {
-    "items": [
-      {
-        "item": {
-          "_itemId": "int",
-          "itemName": "string",
-          "itemAmount": "int",
-          "itemModifiers": "array",
-          "itemLink": "string",
-          "itemPrice": "float",
-          "itemDiscount": "float"
+    "type": "object",
+    "properties": {
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "_itemId": { "type": "number" },
+            "itemName": { "type": "string" },
+            "itemAmount": { "type": "number" },
+            "itemModifiers": { "type": "array" },
+            "itemLink": { "type": "string" },
+            "itemPrice": { "type": "number" },
+            "itemDiscount": { "type": "number" }
+          }
         }
-      }
-    ],
-    "total": "float",
-    "itemNumber": "int"
+      },
+      "total": { "type": "number" },
+      "itemNumber": { "type": "number" }
+    }
   },
   "product": {
-    "_productId": "int",
-    "productName": "string",
-    "productBrand": "string",
-    "productPrice": "float",
-    "productColor": "string",
-    "productDiscount": "float",
-    "productFinalPrice": "float",
-    "productDescription": "string",
-    "productStock": "int",
-    "productInStock": "bool",
-    "productCategories": "array",
-    "overallRating": "float",
-    "reviews": [
-      {
-        "rating": "int",
-        "reviewTitle": "string",
-        "reviewBody": "string"
+    "type": "object",
+    "properties": {
+      "_id": { "type": "string" },
+      "id": { "type": "string" },
+      "isClearance": { "type": "boolean" },
+      "category": {
+        "type": "string",
+        "enum": ["tents", "backpacks", "sleeping-bags", "hammocks"],
+        "description": "Category of the product, should not be blank and should be either tents, backpacks, sleeping-bags or hammocks"
+      },
+      "isNew": { "type": "boolean" },
+      "url": { "type": "string" },
+      "reviews": {
+        "type": "object",
+        "properties": {
+          "reviewsUrl": { "type": "string" },
+          "reviewCount": { "type": "number" },
+          "averageRating": { "type": "number" }
+        }
+      },
+      "nameWithoutBrand": {
+        "type": "string",
+        "description": "Name of the product without the brand, should be a string and cannot be blank"
+      },
+      "name": {
+        "type": "string",
+        "description": "Name of the product, including the brand, should be a string and cannot be blank"
+      },
+      "images": {
+        "type": "object",
+        "properties": {
+          "primarySmall": { "type": "string" },
+          "primaryMedium": { "type": "string" },
+          "primaryLarge": { "type": "string" },
+          "primaryExtraLarge": { "type": "string" },
+          "extraImages": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "src": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "sizesAvailable": {
+        "type": "object",
+        "properties": {
+          "zipper": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "size": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      },
+      "colors": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "colorCode": { "type": "string" },
+            "colorName": { "type": "string" },
+            "colorChipImageSrc": { "type": "string" },
+            "colorPreviewImageSrc": { "type": "string" }
+          }
+        },
+        "description": "If a product has different color options then they should be listed here as an array of objects with colorCode, colorName, colorChipImageSrc, and colorPreviewImageSrc properties."
+      },
+      "descriptionHtmlSimple": {
+        "type": "string",
+        "description": "Description of the product as a string and cannot be blank"
+      },
+      "suggestedRetailPrice": {
+        "type": "number",
+        "description": "Suggested Price from the manufacturer"
+      },
+      "brand": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "url": { "type": "string" },
+          "productsUrl": { "type": "string" },
+          "logoSrc": { "type": "string" },
+          "name": { "type": "string" }
+        }
+      },
+      "listPrice": {
+        "type": "number",
+        "description": "List Price from the manufacturer"
+      },
+      "finalPrice": {
+        "type": "number",
+        "description": "Final Price of the product after any discounts or promotions have been applied. This should be a number and cannot be blank"
       }
-    ]
+    }
   }
 }
