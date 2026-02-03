@@ -1,0 +1,69 @@
+{
+  "user": {
+    "_id": "int",
+    "username": "string",
+    "email": "string",
+    "password": "string (encrypted)",
+    "cart": "object",
+    "address": "string (optional)"
+  },
+
+  "order": {
+    "_orderId": "int",
+    "items": [
+      {
+        "item": {
+          "_itemId": "int",
+          "itemName": "string",
+          "itemAmount": "int",
+          "itemModifiers": "array",
+          "itemPrice": "float",
+          "itemDiscount": "float"
+        }
+      }
+    ],
+    "datetime": "datetime",
+    "subtotal": "float",
+    "total": "float",
+    "address": "string (required)"
+  },
+  
+  "cart": {
+    "items": [
+      {
+        "item": {
+          "_itemId": "int",
+          "itemName": "string",
+          "itemAmount": "int",
+          "itemModifiers": "array",
+          "itemLink": "string",
+          "itemPrice": "float",
+          "itemDiscount": "float"
+        }
+      }
+    ],
+    "total": "float",
+    "itemNumber": "int"
+  },
+  "product": {
+    "_productId": "int",
+    "productName": "string",
+    "productBrand": "string",
+    "productPrice": "float",
+    "productColor": "string",
+    "productDiscount": "float",
+    "productFinalPrice": "float",
+    "productDescription": "string",
+    "productStock": "int",
+    "productInStock": "bool",
+    "productCategories": "array",
+    "overallRating": "float",
+    "reviews": [
+      {
+        "rating": "int",
+        "reviewTitle": "string",
+        "reviewBody": "string"
+      }
+    ]
+  }
+}
