@@ -1,6 +1,3 @@
-I've updated the OpenAPI specification to reflect your new endpoint paths (e.g., changing /newUser to a simple POST on /user). I also standardized the Pagination Wrapper for all list-based endpoints as you specified.
-
-YAML
 openapi: 3.0.0
 info:
   title: Outdoor E-commerce API
@@ -133,6 +130,24 @@ paths:
       responses:
         '200':
           description: Success
+        '500':
+          description: Error
+
+    /order:
+    get:
+      summary: Place a new order
+      tags: [Order]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Success
+        '400':
+          description: Not Found
         '500':
           description: Error
 
