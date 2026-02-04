@@ -1,0 +1,415 @@
+I've updated the OpenAPI specification to reflect your new endpoint paths (e.g., changing /newUser to a simple POST on /user). I also standardized the Pagination Wrapper for all list-based endpoints as you specified.
+
+YAML
+openapi: 3.0.0
+info:
+  title: Outdoor E-commerce API
+  version: 1.0.0
+  description: API design for managing users, products, reviews, and orders.
+
+paths:
+  # --- User Endpoints ---
+  /user:
+    post:
+      summary: Create a new user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserFull'
+      responses:
+        '200':
+          description: User created successfully
+        '500':
+          description: Server error
+
+    delete:
+      summary: Delete a user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id: { type: number }
+      responses:
+        '200':
+          description: User deleted successfully
+        '500':
+          description: Server error
+
+  /users:
+    get:
+      summary: Get all users
+      tags: [User]
+      responses:
+        '200':
+          description: List of users wrapped in pagination
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/UserBasic'
+
+  /user/{id}:
+    get:
+      summary: Get specific user
+      tags: [User]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: User details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserFull'
+
+  # --- Cart, Orders, & Reviews ---
+  /user/{id}/cart:
+    get:
+      summary: Get user cart
+      tags: [User]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Cart details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+
+  /user/{id}/orders:
+    get:
+      summary: Get user order history
+      tags: [User]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated orders
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Order'
+
+  /order:
+    post:
+      summary: Place a new order
+      tags: [Order]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '200':
+          description: Success
+        '500':
+          description: Error
+
+  /Reviews:
+    get:
+      summary: Get all reviews
+      tags: [Review]
+      responses:
+        '200':
+          description: Paginated reviews
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Review'
+
+  /user/{id}/reviews:
+    get:
+      summary: Get reviews by user
+      tags: [Review]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated user reviews
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Review'
+
+  # --- Product Endpoints ---
+  /products:
+    get:
+      summary: Get all products
+      tags: [Product]
+      parameters:
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: category
+          in: query
+          schema: { type: string }
+        - name: fields
+          in: query
+          style: form
+          explode: false
+          schema:
+            type: array
+            items: { type: string }
+        - name: limit
+          in: query
+          schema: { type: integer }
+        - name: offset
+          in: query
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Paginated products
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Product'
+        '400':
+          description: Bad Request
+        '500':
+          description: Server Error
+
+  /products/{id}:
+    get:
+      summary: Get product by ID
+      tags: [Product]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Product details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+
+  /prducts/{productId}/reviews:
+    get:
+      summary: Get reviews for a product
+      tags: [Review]
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Paginated reviews
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/PaginationWrapper'
+                  - type: object
+                    properties:
+                      results:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/Review'
+
+components:
+  schemas:
+    # --- Pagination ---
+    PaginationWrapper:
+      type: object
+      properties:
+        count: { type: number }
+        next: { type: string, nullable: true }
+        previous: { type: string, nullable: true }
+
+    # --- User ---
+    UserBasic:
+      type: object
+      properties:
+        _id: { type: number }
+        username: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        address: { type: string }
+
+    UserFull:
+      allOf:
+        - $ref: '#/components/schemas/UserBasic'
+        - type: object
+          properties:
+            password: { type: string }
+
+    # --- Review ---
+    Review:
+      type: object
+      properties:
+        _reviewId: { type: number }
+        _productId: { type: number }
+        _userId: { type: number }
+        username: { type: string }
+        rating: { type: number }
+        reviewTitle: { type: string }
+        reviewBody: { type: string }
+        date: { type: string }
+
+    # --- Cart & Order ---
+    Cart:
+      type: object
+      properties:
+        _id: { type: number }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        total: { type: number }
+        itemNumber: { type: number }
+
+    OrderItem:
+      type: object
+      properties:
+        _itemId: { type: number }
+        itemName: { type: string }
+        itemAmount: { type: number }
+        itemModifiers:
+          type: array
+          items:
+            type: object
+            properties:
+              name: { type: string }
+              priceChange: { type: number }
+        itemLink: { type: string }
+        itemPrice: { type: number }
+        itemDiscount: { type: number }
+
+    Order:
+      type: object
+      properties:
+        _orderId: { type: number }
+        _userId: { type: number }
+        username: { type: string }
+        firstName: { type: string }
+        lastName: { type: string }
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderItem'
+        datetime: { type: string, format: date-time }
+        subtotal: { type: number }
+        total: { type: number }
+        address: { type: string }
+
+    # --- Product ---
+    Product:
+      type: object
+      properties:
+        _id: { type: string }
+        id: { type: string }
+        isClearance: { type: boolean }
+        category:
+          type: string
+          enum: [tents, backpacks, sleeping-bags, hammocks]
+        isNew: { type: boolean }
+        url: { type: string }
+        reviews:
+          type: object
+          properties:
+            reviewsUrl: { type: string }
+            reviewCount: { type: number }
+            averageRating: { type: number }
+        nameWithoutBrand: { type: string }
+        name: { type: string }
+        images:
+          type: object
+          properties:
+            primarySmall: { type: string }
+            primaryMedium: { type: string }
+            primaryLarge: { type: string }
+            primaryExtraLarge: { type: string }
+            extraImages:
+              type: array
+              items:
+                type: object
+                properties:
+                  title: { type: string }
+                  src: { type: string }
+        sizesAvailable:
+          type: object
+          properties:
+            zipper: { type: array, items: { type: string } }
+            size: { type: array, items: { type: string } }
+        colors:
+          type: array
+          items:
+            type: object
+            properties:
+              colorCode: { type: string }
+              colorName: { type: string }
+              colorChipImageSrc: { type: string }
+              colorPreviewImageSrc: { type: string }
+        descriptionHtmlSimple: { type: string }
+        suggestedRetailPrice: { type: number }
+        brand:
+          type: object
+          properties:
+            id: { type: string }
+            url: { type: string }
+            productsUrl: { type: string }
+            logoSrc: { type: string }
+            name: { type: string }
+        listPrice: { type: number }
+        finalPrice: { type: number }

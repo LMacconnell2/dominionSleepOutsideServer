@@ -47,9 +47,11 @@ export interface User {
 }
 
 export interface Review {
+  _reviewId: number;
   rating: number;
   reviewTitle: string;
   reviewBody: string;
+  date: string;
 }
 
 export interface Product {

@@ -1,0 +1,311 @@
+app.post("user")
+{
+    receive: 
+        user {
+            _id: number
+            username: string
+            firstName: string
+            lastName: string
+            email: string
+            password: string
+            address: string
+        }
+
+    return:
+        res = 200 or 500 level response
+}
+
+app.delete("user")
+{
+    receive:
+        user {
+            _id: number
+        }
+
+    return:
+        res = 200 or 500 level response
+}
+
+app.get("users")
+{
+    return:
+        users[]: user {
+            _id: number
+            username: string
+            firstName: string
+            lastName: string
+            email: string
+            address: string
+        }
+        limit: number
+        offset: number
+
+}
+
+app.get("/user/{id}")
+{
+    return: 
+        user {
+            _id: number
+            username: string
+            firstName: string
+            lastName: string
+            email: string
+            password: string
+            address: string
+        }
+}
+
+app.get("/user/{id}/cart")
+{
+    return:
+        cart {
+            _id: number 
+            items[]: CartItem {
+                _itemId: number
+                itemName: string
+                itemAmount: number
+                itemModifiers[] {
+                    name: string
+                    priceChange: number
+                itemLink: string
+                itemPrice: number
+                itemDiscount: number
+                }
+            }
+            total: number
+            itemNumber: number
+        }
+}
+
+app.get("/user/{id}/reviews")
+{
+    return:
+        reviews[]: review 
+        {
+            _reviewId: number
+            _productId: number
+            _userId: number
+            username: string
+            rating: number
+            reviewTitle: string
+            reviewBody: Body
+            date: string;
+        }
+        limit: number
+        offset: number
+}
+
+app.get("/Reviews")
+{
+    return:
+        reviews[]: review 
+        {
+            _reviewId: number
+            _productId: number
+            _userId: number
+            username: string
+            rating: number
+            reviewTitle: string
+            reviewBody: Body
+            date: string;
+        }
+        limit: number
+        offset: number
+}
+
+app.get("/prducts/{productId}/reviews")
+{
+   return:
+        reviews[]: review 
+        {
+            _reviewId: number
+            _productId: number
+            _userId: number
+            username: string
+            rating: number
+            reviewTitle: string
+            reviewBody: Body
+            date: string;
+        }
+        limit: number
+        offset: number 
+}
+
+app.get("/user/{id}/orders")
+{
+    return:
+        orders[]: order
+        {
+            _orderId: number
+            _userId: number
+            username: string
+            items[]: orderItem
+            {
+                _itemId: number
+                itemName: string
+                itemAmount: number
+                itemModifiers[]: itemModifiers
+                {
+                    name: string
+                    priceChange: number
+                }
+                itemPrice: number
+                itemDiscount: number
+            }
+            datetime: date
+            subtotal: number
+            total: number
+            address: string
+        }
+        limit: number
+        offset: number
+}
+
+app.post("/order") 
+{
+    receive:
+        order
+        {
+            _orderId: number
+            _userId: number
+            username: string
+            firstName: string
+            lastName: string
+            items[]: orderItem
+            {
+                _itemId: number
+                itemName: string
+                itemAmount: number
+                itemModifiers[]: itemModifiers
+                {
+                    name: string
+                    priceChange: number
+                }
+                itemPrice: number
+                itemDiscount: number
+            }
+            datetime: date
+            subtotal: number
+            total: number
+            address: string
+        }
+    return: 200 or 500 level response.
+}
+
+products API endpoints:
+GET /products/{id}
+GET /products/
+
+The JSON schema for the data returned by the products endpoints is:
+{
+  type: 'object',
+  properties: {
+    _id: { type: 'string' },
+    id: { type: 'string' },
+    isClearance: { type: 'boolean' },
+    category: {
+      type: 'string',
+      enum: ['tents', 'backpacks', 'sleeping-bags', 'hammocks'],
+      description: 'Category of the product, should not be blank and should be either tents, backpacks, sleeping-bags or hammocks'
+    },
+    isNew: { type: 'boolean' },
+    url: { type: 'string' },
+    reviews: {
+      type: 'object',
+      properties: {
+        reviewsUrl: { type: 'string' },
+        reviewCount: { type: 'number' },
+        averageRating: { type: 'number' }
+      }
+    },
+    nameWithoutBrand: {
+      type: 'string',
+      description: 'Name of the product without the brand, should be a string and cannot be blank'
+    },
+    name: {
+      type: 'string',
+      description: 'Name of the product, including the brand, should be a string and cannot be blank'
+    },
+    images: {
+      type: 'object',
+      properties: {
+        primarySmall: { type: 'string' },
+        primaryMedium: { type: 'string' },
+        primaryLarge: { type: 'string' },
+        primaryExtraLarge: { type: 'string' },
+        extraImages: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              title: { type: 'string' },
+              src: { type: 'string' }
+            }
+          }
+        }
+      }
+    },
+    sizesAvailable: {
+      type: 'object',
+      properties: {
+        zipper: {
+          type: 'array',
+          items: { type: 'string' }
+        },
+        size: {
+          type: 'array',
+          items: { type: 'string' }
+        }
+      }
+    },
+    colors: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          colorCode: { type: 'string' },
+          colorName: { type: 'string' },
+          colorChipImageSrc: { type: 'string' },
+          colorPreviewImageSrc: { type: 'string' }
+        }
+      },
+      description: 'If a product has different color options then they should be listed here as an array of objects with colorCode, colorName, colorChipImageSrc, and colorPreviewImageSrc properties.'
+    },
+    descriptionHtmlSimple: {
+      type: 'string',
+      description: 'Description of the product as a string and cannot be blank'
+    },
+    suggestedRetailPrice: { type: 'number', description: 'Suggested Price from the manufacturer' },
+    brand: {
+      type: 'object',
+      properties: {
+        id: { type: 'string' },
+        url: { type: 'string' },
+        productsUrl: { type: 'string' },
+        logoSrc: { type: 'string' },
+        name: { type: 'string' }
+      }
+    },
+    listPrice: { type: 'number', description: 'List Price from the manufacturer' },
+    finalPrice: { type: 'number', description: 'Final Price of the product after any discounts or promotions have been applied. This should be a number and cannot be blank' }
+  }
+};
+
+For GET /products/{id}, the request body is empty. The response body is the schema defined above.
+For GET /products, the request body is empty
+it allows the following url parameters:
+{
+    "q": string,
+    "category": string,
+    "fields": string[],
+    "limit": number,
+    "offset": number
+}
+The fields property is an array of strings that specify which fields to include in the response for each product. For example, if you set fields=["Name", "FinalPrice"], then the response will only contain the name and price properties for each product.
+The 200 response body should be the products in JSON format with the schema defined above. The 404 response should have a message of "Product not found". The 400 response should contain details about what part of the request was wrong ,500 error code as appropriate
+Any GET request to an endpoint without an identifier should wrap the requested data in an object like this:
+{
+  "count":number,"next":string|null,"previous":string|null,"results":[]
+}
+where count is the total number of results, next is a url to the next page, prev is a url to the previous page, and results is an array of objects that represent each results, each object should have the schema defined above this endpoint will only respond with 200, 400, and 500 codes.
