@@ -135,7 +135,7 @@ paths:
 
     /order:
     get:
-      summary: Place a new order
+      summary: Retrive an Order Using Its ID
       tags: [Order]
       requestBody:
         required: true
