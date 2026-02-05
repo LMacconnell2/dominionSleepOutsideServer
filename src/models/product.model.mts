@@ -1,5 +1,5 @@
 import mongodb from "../database/index.mts";
-import type {Product} from "./types.mts";
+import type {Product} from "./types.ts";
 
 
 async function getAllProducts(): Promise<Product[] | null> {
