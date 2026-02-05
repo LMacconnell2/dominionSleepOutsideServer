@@ -173,3 +173,13 @@ export interface Alert {
   createdAt: Date;
   modifiedAt: Date;
 }
+
+// create an generic interface for our URL parameters. This will make it easier to type check and validate the data we receive from the client. If we end up using query parameters for other routes we can modify it to include other fields.
+// this works because they are all optional. But if for example a limit exists it will have to  be a string.
+export interface QueryParams {
+  category?: string;
+  q?:string;
+  limit?: string;
+  offset?: string;
+  fields?: string;
+}
