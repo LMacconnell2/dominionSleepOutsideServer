@@ -2,6 +2,8 @@
 import { MongoClient } from "mongodb";
 import { ServerApiVersion } from "mongodb";
 import { products } from "./products.js";
+import * as argon2 from "argon2";
+import { create } from "domain";
 
 //build the uri for our connection string
 const uri = process.env.MONGO_URI
@@ -25,6 +27,11 @@ const init = async () => {
     
     // initialize the Products collection
     await seedProducts(db);
+    await seedUsers(db);
+    await seedOrders(db);
+    await seedAlerts(db);
+
+
   } catch (error) {
     console.error(error.message);
   } finally {
@@ -82,15 +89,88 @@ const seedProducts = async (db) => {
     console.log("Collection 'products' created successfully");
     // insert all products
     const result = await db.collection('products').insertMany(transformedProducts);
+
     
     console.log(
       `${result.insertedCount} new listing(s) created with the following id(s):`
     );
+    await db.collection('products').createIndex({id: 1, name: 1, description: 1, category: 1 });
+
     console.log(result.insertedIds);
   } catch (error) {
     console.error(error.message);
   }
 };
+
+const seedAlerts = async (db) => {
+  try {
+    // drop the collection to clear out the old records
+    await db.collection("alerts").drop();
+    console.log("Collection 'alerts' dropped successfully");
+    // create a new collection
+    await db.createCollection('alerts');
+    console.log("Collection 'alerts' created successfully");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const seedOrders = async (db) => {
+  try {
+    // drop the collection to clear out the old records
+    await db.collection("orders").drop();
+    console.log("Collection 'orders' dropped successfully");
+    // create a new collection
+    await db.createCollection('orders');
+    console.log("Collection 'orders' created successfully");
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
+const seedUsers = async (db) => {
+
+  const hashedPassword = await argon2.hash("password");
+  
+  const exampleUser = {
+    "id": 1,
+    "FirstName": "Hatsune",
+    "LastName": "Miku",
+    "Email": "ZKZM9@example.com",
+    "Password": hashedPassword,
+    "cart": {
+      "items": [],
+      "total": 0
+    },
+    "Address": "123 Main St",
+    "createdAt": new Date(),
+    "updatedAt": new Date()
+    }
+
+
+  
+  try {
+    // drop the collection to clear out the old records
+    await db.collection("users").drop();
+    console.log("Collection 'users' dropped successfully");
+    // create a new collection
+    await db.createCollection('users');
+    console.log("Collection 'users' created successfully");
+    const result = await db.collection('users').insertMany([exampleUser]);
+
+    console.log(
+      `${result.insertedCount} new listing(s) created with the following id(s):`
+    );
+    console.log(result.insertedIds);
+
+    await db.collection('users').createIndex({name: 1, email: 1 }, { unique: true });
+
+
+  } catch (error) {
+    console.error(error.message);
+  }
+};
+
 
 init();
 await client.close();
