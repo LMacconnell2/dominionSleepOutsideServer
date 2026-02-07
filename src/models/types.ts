@@ -181,5 +181,22 @@ export interface QueryParams {
   q?:string;
   limit?: string;
   offset?: string;
-  fields?: string;
+  fields?: string; // "?fields=name, finalPrice"
+}
+
+// Create a generic Mapped Type
+type Projection<T> = {
+  [K in keyof T]?: number; // '?' means "none or many" are allowed
+};
+
+
+export interface FindProductObj {
+  search: {
+    name?:string,
+    descriptionHtmlSimple?:string,
+    category?:string,
+  },
+  limit: number,
+  offset: number,
+  fieldFilters?: Projection<Product>
 }
