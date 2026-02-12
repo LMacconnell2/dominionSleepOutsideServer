@@ -21,6 +21,7 @@ router.get("/", async (req, res, next) => {
 router.get("/:id", async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(id);
 
     // 1. Validate ID exists
     if (!id) {

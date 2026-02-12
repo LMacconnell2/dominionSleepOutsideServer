@@ -33,7 +33,7 @@ async function getAllProducts(query: QueryParams): Promise<Product[] | null> {
 
 async function getProductById(id: string): Promise<Product | null> {
     // Ensure 'id' matches the field name in your DB (usually _id or id)
-    const data = await mongodb.getDb().collection<Product>("products").findOne({ _id: id } as Filter<Product>);
+    const data = await mongodb.getDb().collection<Product>("products").findOne({ id: id } as Filter<Product>);
     return data;
 }
 
