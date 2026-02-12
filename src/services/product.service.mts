@@ -1,20 +1,19 @@
 import productModel from "../models/product.model.mts";
 import type { QueryParams } from "../models/types.ts";
-import type { FindProductObj } from "../models/types.ts";
-import { transformResults } from "../services/util.mts";
-
-// const getAllProducts = async () => {
-//   return await productModel.getAllProducts();
-// };
+import { buildPaginationWrapper } from "../services/util.mts";
 
 export async function getAllProducts(query: QueryParams) {
+  const res = await productModel.getAllProducts(query); //This grabs the data from product.model.mts
+  
+  if (!res) return null;
 
-  const res =  await productModel.getAllProducts(query);
-  if (!res)
-    return
-  const tRes = transformResults(res)
-  console.log(tRes)
-  return tRes;
+  const totalCount = await productModel.getProductCount(query);//This grabs the number of items returned
+
+  // We will use the robust wrapper to generate count, next, and prev links
+  const paginatedResponse = buildPaginationWrapper(totalCount, query, res);
+  
+  console.log("Service Response:", paginatedResponse);
+  return paginatedResponse;
 }
 
 const getProductById = async (id: string) => {

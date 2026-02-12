@@ -185,7 +185,7 @@ export interface QueryParams {
 }
 
 // Create a generic Mapped Type
-type Projection<T> = {
+export type Projection<T> = {
   [K in keyof T]?: number; // '?' means "none or many" are allowed
 };
 

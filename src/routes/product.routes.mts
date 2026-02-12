@@ -19,28 +19,37 @@ router.get("/", async (req, res, next) => {
 
 // GET /products/:id
 router.get("/:id", async (req, res, next) => {
-  const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-  if (!id) {
-    return next(
-      new EntityNotFoundError({
+    // 1. Validate ID exists
+    if (!id) {
+      return next(new EntityNotFoundError({
         message: "Id required",
         code: "ERR_VALID",
         statusCode: 400,
-      }),
-    );
-  }
-  const product = await productService.getProductById(id);
-  if (!product) {
-    return next(
-      new EntityNotFoundError({
+      }));
+    }
+
+    // 2. Fetch the product
+    const product = await productService.getProductById(id);
+
+    // 3. Handle 404
+    if (!product) {
+      return next(new EntityNotFoundError({
         message: `Product ${id} Not Found`,
         code: "ERR_NF",
         statusCode: 404,
-      }),
-    );
+      }));
+    }
+
+    // 4. Success
+    res.status(200).json(product);
+    
+  } catch (error) {
+    // 5. Catch DB connection issues or malformed ObjectIds
+    next(error);
   }
-  res.status(200).json(product);
 });
 
 export default router; // Export the router to use it in the main file
