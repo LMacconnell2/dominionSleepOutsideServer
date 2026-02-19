@@ -1,5 +1,5 @@
-import type {Product, QueryParams} from "../models/types.ts"
-
+import type {Product, QueryParams, User} from "../models/types.ts"
+import jwt from "jsonwebtoken";
 
 function formatFields(fields: string) {
     if (!fields) return {};
@@ -56,5 +56,15 @@ function sanitize(v:Record<string, any>) {
     return v;
 };
 
+function generateToken(user: User) {
+    const token = jwt.sign(
+        { userId: user._id, userEmail: user.email }, 
+        process.env.JWT_SECRET, 
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+    );
+    console.log(token);
+    return token;
+}
 
-export {formatFields, buildPaginationWrapper, sanitize};
+
+export {formatFields, buildPaginationWrapper, sanitize, generateToken};
