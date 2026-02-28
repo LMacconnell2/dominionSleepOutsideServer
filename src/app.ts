@@ -20,7 +20,12 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true })); // to parse the incoming requests with URL parameters
 app.use(express.json({ limit: '10kb' })); // To parse the incoming requests with JSON payloads
 // Cross Origin Resource Sharing
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:4321', // Your Astro dev URL
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'], // <--- THIS IS KEY
+  credentials: true
+}));
 
 // --- 1. GLOBAL MIDDLEWARES ---
 

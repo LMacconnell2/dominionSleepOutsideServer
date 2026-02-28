@@ -1,5 +1,6 @@
 import mongodb from "./database/index.mts";
 import app from "./app.ts";
+import cors from "cors";
 
 const port = process.env.PORT || 3000;
 

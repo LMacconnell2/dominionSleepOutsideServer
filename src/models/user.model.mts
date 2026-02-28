@@ -5,7 +5,7 @@ import argon2 from "argon2";
 import { validator } from "../services/util.mts";
 
 
-async function getAllUsers() {
+// async function getAllUsers() {
     // console.log("getAllProducts:query", query);
 
     // let findProductSearch: Filter<Product> = {};
@@ -30,11 +30,15 @@ async function getAllUsers() {
 
     // console.log("Data retrieved:", data.length);
     // return data;
-}
 
 async function getUserByEmail(email: string): Promise<User | null> {
     // Ensure 'id' matches the field name in your DB (usually _id or id)
-    const data = await mongodb.getDb().collection<User>("users").findOne({ email: email });
+    const data = await mongodb.getDb().collection<User>("users").findOne({ 
+        email: email.toLowerCase() 
+    });
+    const count = await mongodb.getDb().collection("users").countDocuments({ email: email });
+    console.log("count", count);
+    console.log("getUserByEmail:data", data);
     return data;
 }
 
